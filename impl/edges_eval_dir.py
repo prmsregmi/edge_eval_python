@@ -34,7 +34,8 @@ def edges_eval_img(im, gt, out="", thrs=99, max_dist=0.0075, thin=True, need_v=F
     else:
         edge = im
     assert edge.ndim == 2
-    gt = [g.item()[1] for g in loadmat(gt)["groundTruth"][0]]  # 0: Segmentation, 1: Boundaries
+    # gt = [g.item()[1] for g in loadmat(gt)["groundTruth"][0]]  # 0: Segmentation, 1: Boundaries
+    gt = [g['Boundaries'][0, 0] for g in loadmat(gt)["groundTruth"][0]]
 
     # evaluate edge result at each threshold
     cnt_sum_r_p = np.zeros((k, 4), dtype=np.int)  # cnt_r, sum_r, cnt_p, sum_r

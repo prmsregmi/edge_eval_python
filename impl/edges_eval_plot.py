@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import csv
 from scipy.interpolate import interp1d
 
 
@@ -59,13 +60,20 @@ def edges_eval_plot(algs, nms=None, cols=None):
     if nms:
         nms = nms[o]
 
-    # plot results for every algorithm (plot best last)
-    for i in range(n - 1, -1, -1):
-        hs[i] = plt.plot(prs[i, :, 1], prs[i, :, 2], linestyle="-", linewidth=3, color=cols[i])[0]
-        prefix = "ODS={:.3f}, OIS={:.3f}, AP={:.3f}, R50={:.3f}".format(*res[i, [3, 6, 7, 8]])
-        if nms:
-            prefix += " - {}".format(nms[i])
-        print(prefix)
+    csv_path = os.path.join(algs[0], "metrics.csv")
+    with open(csv_path, mode="w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(["ODS", "OIS", "AP", "R50"])  # Header row
+
+        # plot results for every algorithm (plot best last)
+        for i in range(n - 1, -1, -1):
+            hs[i] = plt.plot(prs[i, :, 1], prs[i, :, 2], linestyle="-", linewidth=3, color=cols[i])[0]
+            prefix = "ODS={:.3f}, OIS={:.3f}, AP={:.3f}, R50={:.3f}".format(*res[i, [3, 6, 7, 8]])
+            # if nms:
+            #     prefix += " - {}".format(nms[i])
+            print(prefix, " – Epoch:", algs[0].split('/')[-6])
+            ods, ois, ap, r50 = res[i, [3, 6, 7, 8]]
+            writer.writerow([ods, ois, ap, r50])
 
     # show legend if nms provided (report best first)
     if not nms:
